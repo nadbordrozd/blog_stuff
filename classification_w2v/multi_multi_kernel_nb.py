@@ -60,7 +60,7 @@ class MMGKNB(object):
 
 
 
-class Optimised(object):
+class OptimisedMMGKNB(object):
     def __init__(self, w2v, alpha=1, sigma=1):
         self.w2v = w2v
         self.alpha = alpha
