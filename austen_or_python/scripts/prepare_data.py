@@ -7,15 +7,31 @@ import numpy as np
 sklearn_path = '../data/sklearn.py'
 austen_path = '../data/austen.txt'
 merged_path = '../data/merged.txt'
+
+train_text_path = '../data/train.txt'
+test_text_path = '../data/test.txt'
+X_train_path = '../data/X_train'
+X_test_path = '../data/X_test'
+y_train_path = '../data/y_train'
+y_test_path = '../data/y_test'
+
 labels_path = '../data/target.txt'
 features_path = '../data/X'
 target_path = '../data/y'
 
+n_train = 4000000
+n_test = n_train
 
 chars = '\n !"#$%&\'()*+,-./0123456789:;<=>?@[\\]^_`abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ{|}~'
 charset = set(chars)
+n_chars = len(charset)
 char_indices = dict((c, i) for i, c in enumerate(chars))
 indices_char = dict((i, c) for i, c in enumerate(chars))
+char2vec = {}
+for c in charset:
+    vec = np.zeros(n_chars)
+    vec[char_indices[c]] = 1
+    char2vec[c] = vec
 
 
 def sanitize_text(text):
@@ -23,10 +39,8 @@ def sanitize_text(text):
 
 
 def encode_text(text):
-    zeros = [[0] * len(chars) for _ in range(len(text))]
-    for i, c in enumerate(text):
-        zeros[i][char_indices[c]] = 1
-    return zeros
+    return np.vstack(char2vec[c] for c in text)
+
 
 if __name__ == '__main__':
     with open(sklearn_path, 'rb') as in_0, open(austen_path, 'rb') as in_1:
@@ -54,12 +68,23 @@ if __name__ == '__main__':
     merged_text = "".join(parts)
     target = target[:len(merged_text)]
 
-    with open(merged_path, "wb") as out:
-        out.write(merged_text)
+    train_text = merged_text[:n_train]
+    test_text = merged_text[n_train:n_train + n_test]
 
-    with open(labels_path, "wb") as out:
-        json.dump(target, out)
+    y_train = np.array(target[:n_train]).reshape((1, n_train, 1))
+    y_test = np.array(target[n_train:n_train+n_test]).reshape((1, n_test, 1))
 
-    encoded = np.array(encode_text(merged_text))
-    joblib.dump(encoded, features_path)
-    joblib.dump(np.array(target), target_path)
+    X_train = encode_text(train_text).reshape((1, n_train, n_chars))
+    X_test = encode_text(test_text).reshape((1, n_test, n_chars))
+
+    with open(train_text_path, "wb") as out:
+        out.write(train_text)
+
+    with open(test_text_path, 'wb') as out:
+        out.write(test_text)
+
+    joblib.dump(X_train, X_train_path)
+    joblib.dump(X_test, X_test_path)
+
+    joblib.dump(y_train, y_train_path)
+    joblib.dump(y_test, y_test_path)
