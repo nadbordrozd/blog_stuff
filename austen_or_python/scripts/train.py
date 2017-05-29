@@ -65,7 +65,7 @@ if __name__ == '__main__':
     model_path = '../models/model_2'
     fa = glob('../data/sklearn_clean/*.py')
     juma = [100, 200]
-    fb = glob('../data/austen_clean/*.txt')
+    fb = glob('../data/austen_clean/part*.txt')
     jumb = [100, 200]
     batch_size = 1024
     seq_len = 100
