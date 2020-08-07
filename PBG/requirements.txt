@@ -1,0 +1,7 @@
+attrs==19.3.0
+future==0.18.2
+h5py==2.10.0
+numpy==1.19.0
+six==1.15.0
+torch==1.5.1
+torchbiggraph @ git+https://github.com/facebookresearch/PyTorch-BigGraph.git@4ca238f7d27a6e720b30587f326dd5a40315cc88
